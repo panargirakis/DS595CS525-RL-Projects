@@ -1,7 +1,6 @@
 ### MDP Value Iteration and Policy Iteration
 ### Reference: https://web.stanford.edu/class/cs234/assignment1/index.html 
 import numpy as np
-from typing import Dict
 import sys
 
 np.set_printoptions(precision=3)
@@ -32,7 +31,36 @@ the parameters P, nS, nA, gamma are defined as follows:
 """
 
 
-def policy_evaluation(P, nS: int, nA: int, policy: np.array, gamma=0.9, tol=1e-8):
+def __action_values(P, state, nA, value_func, gamma):
+    """Get the value of each action given a state.
+
+        Parameters:
+        ----------
+        P, nA, gamma:
+            defined at beginning of file
+        state:
+            the state to evaluate
+        value_function: np.ndarray[nS]
+            The value function of the given policy, where value_function[state] is
+            the value of state state
+        Returns:
+        -------
+        action_values: np.ndarray[nA]
+            The value of each possible action at the given step
+        """
+
+    action_values = np.zeros(nA)
+    # find the value of each function
+    for action in range(nA):
+        transitions = P[state][action]
+        # to get the value, take into account the probability
+        for prob, next_state, reward, _ in transitions:
+            action_values[action] += prob * (reward + gamma * value_func[next_state])
+
+    return action_values
+
+
+def policy_evaluation(P, nS, nA, policy, gamma=0.9, tol=1e-8):
     """Evaluate the value function from action given policy.
 
     Parameters:
@@ -100,18 +128,6 @@ def policy_evaluation(P, nS: int, nA: int, policy: np.array, gamma=0.9, tol=1e-8
 
     ############################
     return value_function
-
-
-def __action_values(P, state, nA, value_func, gamma):
-    action_values = np.zeros(nA)
-    # find the value of each function
-    for action in range(nA):
-        transitions = P[state][action]
-        # to get the value, take into account the probability
-        for prob, next_state, reward, _ in transitions:
-            action_values[action] += prob * (reward + gamma * value_func[next_state])
-
-    return action_values
 
 
 def policy_improvement(P, nS, nA, value_from_policy, gamma=0.9):
@@ -260,6 +276,7 @@ def render_single(env, policy, render = False, n_episodes=100):
                 env.render() # render the game
             ############################
             # YOUR IMPLEMENTATION HERE #
+
 
     return total_rewards
 
