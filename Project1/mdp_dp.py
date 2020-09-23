@@ -273,10 +273,12 @@ def render_single(env, policy, render = False, n_episodes=100):
         done = False
         while not done:
             if render:
-                env.render() # render the game
+                env.render()  # render the game
             ############################
             # YOUR IMPLEMENTATION HERE #
-
+            action = np.argmax(policy[env.s])
+            observation, reward, done, info = env.step(action)
+            total_rewards += reward
 
     return total_rewards
 
