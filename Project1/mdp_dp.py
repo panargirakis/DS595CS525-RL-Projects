@@ -227,6 +227,8 @@ def value_iteration(P, nS, nA, V, gamma=0.9, tol=1e-8):
     ############################
     # YOUR IMPLEMENTATION HERE #
 
+    policy_new = np.zeros([nS, nA])
+
     max_diff = sys.float_info.max
 
     while max_diff > tol:
@@ -240,10 +242,13 @@ def value_iteration(P, nS, nA, V, gamma=0.9, tol=1e-8):
 
             v_temp[state] = new_val
 
+            # save policy based on new value
+            action_vector = np.zeros(nA)
+            action_vector[np.argmax(action_values)] = 1.0
+            policy_new[state] = action_vector
+
         max_diff = diff
         V_new = v_temp
-
-    policy_new = policy_improvement(P, nS, nA, V_new, gamma)
 
     ############################
     return policy_new, V_new
