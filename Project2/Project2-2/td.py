@@ -151,6 +151,9 @@ def q_learning(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     # loop n_episodes
     for an_episode in range(n_episodes):
 
+        # define decaying epsilon
+        epsilon *= 0.99
+
         # initialize the environment
         state = env.reset()
 
