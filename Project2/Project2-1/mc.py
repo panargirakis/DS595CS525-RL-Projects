@@ -99,7 +99,7 @@ def mc_prediction(policy, env, n_episodes, gamma = 1.0):
 
         # loop for each step of episode, t = T-1, T-2,...,0
         G = 0
-        states_visited = []
+        states_visited = set()
         for state, _, reward in reversed(states_actions_rewards):
             
             # compute G
@@ -117,7 +117,7 @@ def mc_prediction(policy, env, n_episodes, gamma = 1.0):
                 # calculate average return for this state over all sampled episodes
                 V[state] = returns_sum[state] / returns_count[state]
 
-                states_visited.append(state)
+                states_visited.add(state)
 
 
 
@@ -227,7 +227,7 @@ def mc_control_epsilon_greedy(env, n_episodes, gamma = 1.0, epsilon = 0.1):
 
 
         G = 0
-        states_visited = []
+        states_visited = set()
         # loop for each step of episode, t = T-1, T-2, ...,0
         for state, action, reward in reversed(state_action_reward):
 
@@ -246,6 +246,6 @@ def mc_control_epsilon_greedy(env, n_episodes, gamma = 1.0, epsilon = 0.1):
                 # calculate average return for this state over all sampled episodes
                 Q[state][action] = returns_sum[(state, action)] / returns_count[(state, action)]
 
-                states_visited.append(state)
+                states_visited.add(state)
         
     return Q
