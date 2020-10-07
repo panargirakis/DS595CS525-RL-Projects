@@ -3,7 +3,8 @@
 import numpy as np
 import random
 from collections import defaultdict
-#-------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
 '''
     Temporal Difference
     In this problem, you will implememnt an AI player for cliffwalking.
@@ -14,7 +15,8 @@ from collections import defaultdict
     You don't have to follow the comments to write your code. They are provided
     as hints in case you need. 
 '''
-#-------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+
 
 def epsilon_greedy(Q, state, nA, epsilon = 0.1):
     """Selects epsilon-greedy action for supplied state.
@@ -41,12 +43,16 @@ def epsilon_greedy(Q, state, nA, epsilon = 0.1):
     ############################
     # YOUR IMPLEMENTATION HERE #
 
+    rand_num = random.random()
 
-
-
+    if rand_num < epsilon:
+        action = random.randrange(nA)
+    else:
+        action = np.argmax(Q[state])
 
     ############################
     return action
+
 
 def sarsa(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     """On-policy TD control. Find an optimal epsilon-greedy policy.
@@ -111,6 +117,7 @@ def sarsa(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
 
     ############################
     return Q
+
 
 def q_learning(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     """Off-policy TD control. Find an optimal epsilon-greedy policy.
