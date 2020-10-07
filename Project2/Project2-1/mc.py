@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import numpy as np
+import gym
 import random
 from collections import defaultdict
 
@@ -40,7 +41,7 @@ def initial_policy(observation):
     return action 
 
 
-def mc_prediction(policy, env, n_episodes, gamma = 1.0):
+def mc_prediction(policy, env: gym.Env, n_episodes, gamma = 1.0):
     """Given policy using sampling to calculate the value function 
         by using Monte Carlo first visit algorithm.
     
@@ -68,10 +69,13 @@ def mc_prediction(policy, env, n_episodes, gamma = 1.0):
     ############################
     # YOUR IMPLEMENTATION HERE #
     # loop each episode
+    for an_episodo in range(n_episodes):
 
         # initialize the episode
+        env.reset()
 
         # generate empty episode list
+        states_and_rewards = []
 
         # loop until episode generation is done
 
@@ -133,8 +137,12 @@ def epsilon_greedy(Q, state, nA, epsilon = 0.1):
     ############################
     # YOUR IMPLEMENTATION HERE #
 
+    rand_num = random.random()
 
-
+    if rand_num < epsilon:
+        action = random.randrange(nA)
+    else:
+        action = np.argmax(Q[state])
 
     ############################
     return action

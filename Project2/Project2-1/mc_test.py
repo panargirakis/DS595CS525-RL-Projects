@@ -64,7 +64,7 @@ def test_epsilon_greedy():
         action = epsilon_greedy(Q, state, 4,  epsilon=0.1)
         actions.append(action)
         
-    assert np.allclose(1-np.count_nonzero(actions)/10000,0.925,atol=0.02)
+    assert np.allclose(1-np.count_nonzero(actions)/10000, 0.925, atol=0.02)
 
 
 # ---------------------------------------------------------------
