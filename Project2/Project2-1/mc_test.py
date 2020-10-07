@@ -14,12 +14,14 @@ from mc import *
 """
 env = gym.make('Blackjack-v0')
 
-#---------------------------------------------------------------
+
+# ---------------------------------------------------------------
 def test_python_version():
     '''------On-policy Monte Carlo(50 points in total)------'''
     assert sys.version_info[0] == 3 # require python 3
     
-#---------------------------------------------------------------
+
+# ---------------------------------------------------------------
 def test_initial_policy():
     '''initial_policy (2 points)'''
     state1 = (21, 10, True)
@@ -29,8 +31,9 @@ def test_initial_policy():
     
     assert np.allclose(action1,0)
     assert np.allclose(action2,1)
-    
-#---------------------------------------------------------------
+
+
+# ---------------------------------------------------------------
 def test_mc_prediction():
     '''mc_prediction (20 points)'''
     V_500k = mc_prediction(initial_policy, env, n_episodes=500000, gamma = 1.0)
@@ -47,8 +50,9 @@ def test_mc_prediction():
         assert np.allclose(V_500k[b], -0.4, atol = 0.1)
     for b in boundaries3:
         assert V_500k[b]>0.6
-                     
-#---------------------------------------------------------------
+
+
+# ---------------------------------------------------------------
 def test_epsilon_greedy():      
     '''epsilon_greedy (8 points)'''
     # just a test case, not related to blackjack
@@ -61,8 +65,9 @@ def test_epsilon_greedy():
         actions.append(action)
         
     assert np.allclose(1-np.count_nonzero(actions)/10000,0.925,atol=0.02)
-    
-#---------------------------------------------------------------
+
+
+# ---------------------------------------------------------------
 def test_mc_control_epsilon_greedy():
     '''mc_control_epsilon_greedy (20 points)'''
     boundaries_key = [(19,10,True),(19,4,True),(18,7,True),(17,9,True),(17,5,True),
@@ -76,7 +81,6 @@ def test_mc_control_epsilon_greedy():
         print([policy[key] for key in boundaries_key])
         if [policy[key] for key in boundaries_key] == boundaries_action:
             count += 1
-    
-    
+
     assert len(Q_500k) == 280
     assert count >= 1 
