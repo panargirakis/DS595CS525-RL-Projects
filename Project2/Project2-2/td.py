@@ -3,6 +3,7 @@
 import numpy as np
 import random
 from collections import defaultdict
+import gym
 
 # -------------------------------------------------------------------------
 '''
@@ -54,7 +55,7 @@ def epsilon_greedy(Q, state, nA, epsilon = 0.1):
     return action
 
 
-def sarsa(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
+def sarsa(env: gym.Env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     """On-policy TD control. Find an optimal epsilon-greedy policy.
     
     Parameters:
@@ -87,39 +88,40 @@ def sarsa(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     # YOUR IMPLEMENTATION HERE #
     
     # loop n_episodes
+    for an_episode in range(n_episodes):
 
         # define decaying epsilon
+        epsilon *= 0.99
 
+        # initialize the environment
+        state = env.reset()
 
-        # initialize the environment 
-
-        
         # get an action from policy
+        action = epsilon_greedy(Q, state, env.action_space.n, epsilon)
 
         # loop for each step of episode
+        done = False
+        while not done:
 
             # return a new state, reward and done
+            new_state, reward, done, info = env.step(action)
 
             # get next action
+            next_action = epsilon_greedy(Q, new_state, env.action_space.n, epsilon)
 
-            
-            # TD update
-            # td_target
+            # TD update, td_target, td_error, new Q
+            Q[state][action] += alpha * (reward + gamma * Q[new_state][next_action] - Q[state][action])
 
-            # td_error
-
-            # new Q
-
-            
             # update state
+            state = new_state
 
             # update action
+            action = next_action
 
-    ############################
     return Q
 
 
-def q_learning(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
+def q_learning(env: gym.Env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     """Off-policy TD control. Find an optimal epsilon-greedy policy.
     
     Parameters:
@@ -148,24 +150,26 @@ def q_learning(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     # YOUR IMPLEMENTATION HERE #
     
     # loop n_episodes
+    for an_episode in range(n_episodes):
 
-        # initialize the environment 
+        # initialize the environment
+        state = env.reset()
 
-        
         # loop for each step of episode
+        done = False
+        while not done:
 
             # get an action from policy
+            action = epsilon_greedy(Q, state, env.action_space.n, epsilon)
             
             # return a new state, reward and done
+            new_state, reward, done, info = env.step(action)
             
-            # TD update
-            # td_target with best Q
-
-            # td_error
-
-            # new Q
+            # TD update, td_target with best Q, td_error, new Q
+            Q[state][action] += alpha * (reward + gamma * np.max(Q[new_state]) - Q[state][action])
             
             # update state
+            state = new_state
 
     ############################
     return Q
