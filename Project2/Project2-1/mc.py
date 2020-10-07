@@ -35,7 +35,11 @@ def initial_policy(observation):
     # YOUR IMPLEMENTATION HERE #
     # get parameters from observation
 
-    # action
+    curr_sum, dealer_face_up_card, has_usable_ace = observation
+
+    action = 1
+    if curr_sum >= 20:
+        action = 0
 
     ############################
     return action 
@@ -72,36 +76,48 @@ def mc_prediction(policy, env: gym.Env, n_episodes, gamma = 1.0):
     for an_episodo in range(n_episodes):
 
         # initialize the episode
-        env.reset()
+        state = env.reset()
+
 
         # generate empty episode list
-        states_and_rewards = []
+        states_actions_rewards = []
 
         # loop until episode generation is done
-
-
+        done = False
+        while not done:
             # select an action
+            action = policy(state)
 
             # return a reward and new state
+            new_state, reward, done, info = env.step(action)
 
             # append state, action, reward to episode
+            states_actions_rewards.append((state, action, reward))
 
             # update state to new state
-
-            
-            
+            state = new_state
 
         # loop for each step of episode, t = T-1, T-2,...,0
-
+        G = 0
+        states_visited = []
+        for state, _, reward in reversed(states_actions_rewards):
+            
             # compute G
+            G = G * gamma + reward
 
             # unless state_t appears in states
+            if state not in states_visited:
             
                 # update return_count
+                returns_count[state] += 1
                 
                 # update return_sum
+                returns_sum[state] += G
 
                 # calculate average return for this state over all sampled episodes
+                V[state] = returns_sum[state] / returns_count[state]
+
+                states_visited.append(state)
 
 
 
