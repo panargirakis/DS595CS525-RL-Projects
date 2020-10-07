@@ -45,7 +45,7 @@ def initial_policy(observation):
     return action 
 
 
-def mc_prediction(policy, env: gym.Env, n_episodes, gamma = 1.0):
+def mc_prediction(policy, env, n_episodes, gamma = 1.0):
     """Given policy using sampling to calculate the value function 
         by using Monte Carlo first visit algorithm.
     
@@ -198,37 +198,54 @@ def mc_control_epsilon_greedy(env, n_episodes, gamma = 1.0, epsilon = 0.1):
     ############################
     # YOUR IMPLEMENTATION HERE #
 
-        # define decaying epsilon
+    # define decaying epsilon
 
-
+    for an_episode in range(1, n_episodes + 1):
+        epsilon_decay = epsilon - (0.1 / an_episode)
 
         # initialize the episode
+        state = env.reset()
 
         # generate empty episode list
+        state_action_reward = []
 
         # loop until one episode generation is done
-
-
+        done = False
+        while not done:
             # get an action from epsilon greedy policy
+            action = epsilon_greedy(Q, state, env.action_space.n, epsilon_decay)
 
             # return a reward and new state
+            new_state, reward, done, info = env.step(action)
 
             # append state, action, reward to episode
+            state_action_reward.append((state, action, reward))
 
             # update state to new state
+            state = new_state
 
-            
-        
+
+
+        G = 0
+        states_visited = []
         # loop for each step of episode, t = T-1, T-2, ...,0
-        
+        for state, action, reward in reversed(state_action_reward):
+
             # compute G
-            
+            G = gamma * G + reward
+
             # unless the pair state_t, action_t appears in <state action> pair list
-            
+            if (state, action) not in states_visited:
+
                 # update return_count
-                
+                returns_count[(state, action)] += 1
+
                 # update return_sum
+                returns_sum[(state, action)] += G
 
                 # calculate average return for this state over all sampled episodes
+                Q[state][action] = returns_sum[(state, action)] / returns_count[(state, action)]
+
+                states_visited.append(state)
         
     return Q
