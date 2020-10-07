@@ -3,7 +3,6 @@
 import numpy as np
 import random
 from collections import defaultdict
-import gym
 
 # -------------------------------------------------------------------------
 '''
@@ -55,7 +54,7 @@ def epsilon_greedy(Q, state, nA, epsilon = 0.1):
     return action
 
 
-def sarsa(env: gym.Env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
+def sarsa(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     """On-policy TD control. Find an optimal epsilon-greedy policy.
     
     Parameters:
@@ -121,7 +120,7 @@ def sarsa(env: gym.Env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     return Q
 
 
-def q_learning(env: gym.Env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
+def q_learning(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     """Off-policy TD control. Find an optimal epsilon-greedy policy.
     
     Parameters:
