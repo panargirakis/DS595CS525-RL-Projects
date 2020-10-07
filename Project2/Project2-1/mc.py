@@ -7,8 +7,8 @@ from collections import defaultdict
 # -------------------------------------------------------------------------
 '''
     Monte-Carlo
-    In this problem, you will implememnt an AI player for Blackjack.
-    The main goal of this problem is to get familar with Monte-Carlo algorithm.
+    In this problem, you will implement an AI player for Blackjack.
+    The main goal of this problem is to get familiar with Monte-Carlo algorithm.
     You could test the correctness of your code 
     by typing 'nosetests -v mc_test.py' in the terminal.
     
@@ -19,7 +19,7 @@ from collections import defaultdict
 
 
 def initial_policy(observation):
-    """A policy that sticks if the player score is >= 20 and his otherwise
+    """A policy that sticks if the player score is >= 20 and hits otherwise
     
     Parameters:
     -----------
@@ -47,7 +47,7 @@ def mc_prediction(policy, env, n_episodes, gamma = 1.0):
     Parameters:
     -----------
     policy: function
-        A function that maps an obversation to action probabilities
+        A function that maps an observation to action probabilities
     env: function
         OpenAI gym environment
     n_episodes: int
