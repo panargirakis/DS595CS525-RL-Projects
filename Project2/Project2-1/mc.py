@@ -3,7 +3,8 @@
 import numpy as np
 import random
 from collections import defaultdict
-#-------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
 '''
     Monte-Carlo
     In this problem, you will implememnt an AI player for Blackjack.
@@ -14,7 +15,8 @@ from collections import defaultdict
     You don't have to follow the comments to write your code. They are provided
     as hints in case you need. 
 '''
-#-------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+
 
 def initial_policy(observation):
     """A policy that sticks if the player score is >= 20 and his otherwise
@@ -36,6 +38,7 @@ def initial_policy(observation):
 
     ############################
     return action 
+
 
 def mc_prediction(policy, env, n_episodes, gamma = 1.0):
     """Given policy using sampling to calculate the value function 
@@ -102,6 +105,7 @@ def mc_prediction(policy, env, n_episodes, gamma = 1.0):
     
     return V
 
+
 def epsilon_greedy(Q, state, nA, epsilon = 0.1):
     """Selects epsilon-greedy action for supplied state.
     
@@ -134,6 +138,7 @@ def epsilon_greedy(Q, state, nA, epsilon = 0.1):
 
     ############################
     return action
+
 
 def mc_control_epsilon_greedy(env, n_episodes, gamma = 1.0, epsilon = 0.1):
     """Monte Carlo control with exploring starts. 
