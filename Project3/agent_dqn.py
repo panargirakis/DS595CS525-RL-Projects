@@ -191,7 +191,7 @@ class Agent_DQN(Agent):
         ###########################
 
     def optimize_model(self):
-        if len(self.replay_memory) < self.batch_size:
+        if len(self.replay_memory.memory) < self.batch_size:
             raise Exception("The batch size cannot be larger than the memory size")
         transitions = self.replay_buffer()
         """
