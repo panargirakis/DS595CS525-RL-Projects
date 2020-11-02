@@ -2,7 +2,7 @@ from collections import namedtuple
 import random
 from collections import deque
 
-Transition = namedtuple('Transion',
+Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
 
 

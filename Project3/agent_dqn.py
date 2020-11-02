@@ -55,7 +55,6 @@ class Agent_DQN(Agent):
         self.replay_memory = ReplayMemory(self.memory_size)
         self.optimize_model_interval = 4
         self.gamma = 0.99
-        self.render = args.render
         self.save_interval = args.save_interval
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.rolling_reward = deque(maxlen=30)
@@ -86,7 +85,10 @@ class Agent_DQN(Agent):
             print('loading trained model')
             ###########################
             # YOUR IMPLEMENTATION HERE #
-            model = load(self.save_path, env.action_space.n)
+            load_path = self.save_path
+            if args.file_to_load is not None:
+                load_path = args.file_to_load
+            model = load(load_path, env.action_space.n)
             self.target_net.load_state_dict(model.state_dict())
             self.policy_net.load_state_dict(model.state_dict())
             del model
@@ -179,15 +181,9 @@ class Agent_DQN(Agent):
                 episode_steps += 1
                 action = self.make_action(obs)
 
-                if self.render:
-                    self.env.render()
-
                 obs_new, reward, done, info = self.env.step(action)
-
                 total_reward += reward
-
                 reward = torch.tensor([reward], device=self.device)
-
                 action_t = torch.tensor([[action]], device=self.device, dtype=torch.long)
 
                 next_state = None
