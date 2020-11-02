@@ -6,7 +6,7 @@ import torchvision.transforms as T
 
 
 class DQNbn(nn.Module):
-    def __init__(self, in_channels=4, n_actions=14):
+    def __init__(self, n_actions, in_channels=4):
         """
         Initialize Deep Q Network
 
@@ -34,7 +34,7 @@ class DQNbn(nn.Module):
 
 
 class DQN(nn.Module):
-    def __init__(self, in_channels=4, n_actions=14):
+    def __init__(self, n_actions, in_channels=4):
         """
         Initialize Deep Q Network
 
