@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 import random
 import numpy as np
-from itertools import count
+from collections import deque
 import os
+from statistics import mean
 import sys
 import math
 import gym
 from collections import namedtuple
+import pandas as pd
 
 import torch
 import torch.nn.functional as F
@@ -56,6 +58,7 @@ class Agent_DQN(Agent):
         self.render = args.render
         self.save_interval = args.save_interval
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.rolling_reward = deque(maxlen=30)
 
         self.policy_net = DuelingDQN(n_actions=env.action_space.n).to(self.device)
         self.target_net = DuelingDQN(n_actions=env.action_space.n).to(self.device)
@@ -70,10 +73,15 @@ class Agent_DQN(Agent):
         self.eps_start = 1
 
         self.save_path = "./saved_models/model-latest.pt"
+        self.log_save_path = "./saved_models/model-latest-log.csv"
+        self.log_interval = args.log_interval
+        self.log_buffer = pd.DataFrame(columns=["Time Step", "Episode", "30-Episode Average Reward"])
         if not os.path.isdir(os.path.dirname(self.save_path)):
             os.mkdir(os.path.dirname(self.save_path))
 
-        if args.test_dqn:
+        self.log_buffer.to_csv(self.log_save_path, index=False)
+
+        if args.test_dqn or args.continue_training:
             # you can load your model here
             print('loading trained model')
             ###########################
@@ -165,7 +173,10 @@ class Agent_DQN(Agent):
         for episode in range(self.n_episodes):
             obs = self.env.reset()
             total_reward = 0.0
-            for t in count():
+            episode_steps = 0
+            done = False
+            while not done:
+                episode_steps += 1
                 action = self.make_action(obs)
 
                 if self.render:
@@ -198,11 +209,23 @@ class Agent_DQN(Agent):
                         save(self.policy_net, self.save_path)
                         print("Model saved!")
 
-                if done:
-                    break
+            self.rolling_reward.append(total_reward)
+            mean_reward = mean(self.rolling_reward)
+
+            if len(self.rolling_reward) == self.rolling_reward.maxlen:
+                self.log_buffer = self.log_buffer.append({'Time Step': self.steps_done,
+                                                          'Episode': episode,
+                                                          '30-Episode Average Reward': mean_reward},
+                                                         ignore_index=True)
+
             if episode % 20 == 0:
-                print('Total steps: {} \t Episode: {}/{} \t Total reward: {}'.format(self.steps_done, episode, t,
-                                                                                     total_reward))
+                print('Total steps: {} \t Episode: {}/{} \t Total reward: {} \t 30-ep avg reward: {:.3f}'.format(
+                    self.steps_done, episode, episode_steps, total_reward, mean_reward))
+
+            if episode % 50 == 0 and len(self.rolling_reward) == self.rolling_reward.maxlen:
+                self.log_buffer.to_csv(self.log_save_path, mode='a', header=False, index=False)
+                self.log_buffer = self.log_buffer.iloc[0:0]  # clear so that the save data does not get re-appended
+
         save(self.policy_net, self.save_path)
         ###########################
 

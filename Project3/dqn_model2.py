@@ -10,7 +10,7 @@ def save(model, path):
 
 
 def load(path, n_actions):
-    model = DQNbn(n_actions=n_actions)
+    model = DuelingDQN(n_actions=n_actions)
     model.load_state_dict(torch.load(path))
     model.eval()
     return model
