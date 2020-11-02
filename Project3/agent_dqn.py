@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import random
 import numpy as np
-from collections import deque
 from itertools import count
 import os
 import sys
@@ -114,7 +113,6 @@ class Agent_DQN(Agent):
                 except TypeError:
                     pass
         else:
-            # action = torch.tensor(random.randrange(4), device=self.device, dtype=torch.long)
             action = random.randrange(self.env.action_space.n)
 
         ###########################
@@ -130,6 +128,7 @@ class Agent_DQN(Agent):
         """
         ###########################
         # YOUR IMPLEMENTATION HERE #
+        self.replay_memory.push(*args)
 
         ###########################
 
@@ -139,9 +138,7 @@ class Agent_DQN(Agent):
         """
         ###########################
         # YOUR IMPLEMENTATION HERE #
-
-        ###########################
-        return
+        return self.replay_memory.sample(self.batch_size)
 
     @staticmethod
     def get_state(obs):
@@ -168,21 +165,16 @@ class Agent_DQN(Agent):
 
                 total_reward += reward
 
-                if not done:
-                    next_obs = obs_n
-                else:
-                    next_obs = None
-
                 reward = torch.tensor([reward], device=self.device)
 
                 action_t = torch.tensor([[action]], device=self.device, dtype=torch.long)
 
                 next_state = None
                 if not done:
-                    next_state = self.get_state(next_obs)
-                self.replay_memory.push(self.get_state(obs), action_t.to(self.device),
-                                        next_state, reward.to(self.device))
-                obs = next_obs
+                    next_state = self.get_state(obs_n)
+                self.push(self.get_state(obs), action_t.to(self.device),
+                          next_state, reward.to(self.device))
+                obs = obs_n
 
                 if self.steps_done > self.init_memory:
                     self.optimize_model()
@@ -201,7 +193,7 @@ class Agent_DQN(Agent):
     def optimize_model(self):
         if len(self.replay_memory) < self.batch_size:
             raise Exception("The batch size cannot be larger than the memory size")
-        transitions = self.replay_memory.sample(self.batch_size)
+        transitions = self.replay_buffer()
         """
         zip(*transitions) unzips the transitions into
         Transition(*) creates new named tuple

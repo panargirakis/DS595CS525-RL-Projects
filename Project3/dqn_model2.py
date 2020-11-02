@@ -5,6 +5,17 @@ import torch.nn.functional as F
 import torchvision.transforms as T
 
 
+def save(model, path):
+    torch.save(model.state_dict(), path)
+
+
+def load(path, n_actions):
+    model = DQNbn(n_actions=n_actions)
+    model.load_state_dict(torch.load(path))
+    model.eval()
+    return model
+
+
 class DQNbn(nn.Module):
     def __init__(self, n_actions, in_channels=4):
         """
