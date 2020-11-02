@@ -14,7 +14,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 from agent import Agent
-from dqn_model2 import DQN, DQNbn, load, save
+from dqn_model2 import DQN, DQNbn, load, save, DuelingDQN
 from replay_memory import ReplayMemory
 
 """
@@ -51,12 +51,14 @@ class Agent_DQN(Agent):
         self.learning_rate = args.learning_rate
         self.memory_size = self.init_memory * 10
         self.replay_memory = ReplayMemory(self.memory_size)
-        self.gamma = args.gamma
+        self.optimize_model_interval = 4
+        self.gamma = 0.99
         self.render = args.render
+        self.save_interval = args.save_interval
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.policy_net = DQNbn(n_actions=env.action_space.n).to(self.device)
-        self.target_net = DQNbn(n_actions=env.action_space.n).to(self.device)
+        self.policy_net = DuelingDQN(n_actions=env.action_space.n).to(self.device)
+        self.target_net = DuelingDQN(n_actions=env.action_space.n).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.optimizer = optim.Adam(self.policy_net.parameters(), lr=self.learning_rate)
 
@@ -79,6 +81,7 @@ class Agent_DQN(Agent):
             model = load(self.save_path, env.action_space.n)
             self.target_net.load_state_dict(model.state_dict())
             self.policy_net.load_state_dict(model.state_dict())
+            del model
 
     def init_game_setting(self):
         """
@@ -168,7 +171,7 @@ class Agent_DQN(Agent):
                 if self.render:
                     self.env.render()
 
-                obs_n, reward, done, info = self.env.step(action)
+                obs_new, reward, done, info = self.env.step(action)
 
                 total_reward += reward
 
@@ -178,16 +181,20 @@ class Agent_DQN(Agent):
 
                 next_state = None
                 if not done:
-                    next_state = self.get_state(obs_n)
+                    next_state = self.get_state(obs_new)
                 self.push(self.get_state(obs), action_t.to(self.device),
                           next_state, reward.to(self.device))
-                obs = obs_n
+                obs = obs_new
 
                 if self.steps_done > self.init_memory:
-                    self.optimize_model()
+
+                    if self.steps_done % self.optimize_model_interval == 0:
+                        self.optimize_model()
 
                     if self.steps_done % self.target_update_int == 0:
                         self.target_net.load_state_dict(self.policy_net.state_dict())
+
+                    if self.steps_done % self.save_interval == 0:
                         save(self.policy_net, self.save_path)
                         print("Model saved!")
 
@@ -196,7 +203,7 @@ class Agent_DQN(Agent):
             if episode % 20 == 0:
                 print('Total steps: {} \t Episode: {}/{} \t Total reward: {}'.format(self.steps_done, episode, t,
                                                                                      total_reward))
-
+        save(self.policy_net, self.save_path)
         ###########################
 
     def optimize_model(self):
@@ -218,7 +225,7 @@ class Agent_DQN(Agent):
 
         non_final_mask = torch.tensor(
             tuple(map(lambda s: s is not None, batch.next_state)),
-            device=self.device, dtype=torch.uint8)
+            device=self.device, dtype=torch.bool)
 
         non_final_next_states = torch.cat([s for s in batch.next_state
                                            if s is not None]).to(self.device)
@@ -240,3 +247,13 @@ class Agent_DQN(Agent):
         for param in self.policy_net.parameters():
             param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
+
+        del non_final_mask
+        del non_final_next_states
+        del state_batch
+        del action_batch
+        del reward_batch
+        del state_action_values
+        del next_state_values
+        del expected_state_action_values
+        del loss
