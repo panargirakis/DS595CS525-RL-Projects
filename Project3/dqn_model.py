@@ -3,6 +3,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 class DQN(nn.Module):
     """Initialize a deep Q-learning network
     
@@ -13,6 +14,7 @@ class DQN(nn.Module):
     
     This is just a hint. You can build your own structure.
     """
+
     def __init__(self):
         """
         You can add additional arguments as you need.
@@ -22,9 +24,7 @@ class DQN(nn.Module):
         super(DQN, self).__init__()
         ###########################
         # YOUR IMPLEMENTATION HERE #
-    
-    
-    
+
     def forward(self, x):
         """
         In the forward function we accept a Tensor of input data and we must return
@@ -33,8 +33,6 @@ class DQN(nn.Module):
         """
         ###########################
         # YOUR IMPLEMENTATION HERE #
-        
-        
-        
+
         ###########################
         return x
