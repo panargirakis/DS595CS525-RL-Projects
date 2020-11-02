@@ -14,7 +14,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 from agent import Agent
-from dqn_model2 import DQN, DQNbn
+from dqn_model2 import DQN, DQNbn, load, save
 from replay_memory import ReplayMemory
 
 """
@@ -67,11 +67,18 @@ class Agent_DQN(Agent):
         self.eps_end = 0.02
         self.eps_start = 1
 
+        self.save_path = "./saved_models/model-latest.pt"
+        if not os.path.isdir(os.path.dirname(self.save_path)):
+            os.mkdir(os.path.dirname(self.save_path))
+
         if args.test_dqn:
             # you can load your model here
             print('loading trained model')
             ###########################
             # YOUR IMPLEMENTATION HERE #
+            model = load(self.save_path, env.action_space.n)
+            self.target_net.load_state_dict(model.state_dict())
+            self.policy_net.load_state_dict(model.state_dict())
 
     def init_game_setting(self):
         """
@@ -181,6 +188,8 @@ class Agent_DQN(Agent):
 
                     if self.steps_done % self.target_update_int == 0:
                         self.target_net.load_state_dict(self.policy_net.state_dict())
+                        save(self.policy_net, self.save_path)
+                        print("Model saved!")
 
                 if done:
                     break
