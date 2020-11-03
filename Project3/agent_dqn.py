@@ -256,7 +256,13 @@ class Agent_DQN(Agent):
         state_action_values = self.policy_net(state_batch).gather(1, action_batch)
 
         next_state_values = torch.zeros(self.batch_size, device=self.device)
-        next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1)[0].detach()
+
+        # next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1)[0].detach()
+
+        next_state_action = self.policy_net(non_final_next_states).detach().max(1)[1].view(-1, 1)
+        next_state_values[non_final_mask] = self.target_net(non_final_next_states).detach().gather(
+            1, next_state_action).view(-1)
+
         expected_state_action_values = (next_state_values * self.gamma) + reward_batch
 
         loss = F.smooth_l1_loss(state_action_values.float(), expected_state_action_values.unsqueeze(1).float())
