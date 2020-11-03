@@ -124,7 +124,7 @@ class Agent_DQN(Agent):
 
         state = self.get_state(observation)
 
-        if sample > eps_threshold:
+        if sample > eps_threshold or test:
             with torch.no_grad():
                 action = self.policy_net(state.to(self.device)).max(1)[1].view(1, 1).flatten().numpy()
                 try:
@@ -179,7 +179,7 @@ class Agent_DQN(Agent):
             done = False
             while not done:
                 episode_steps += 1
-                action = self.make_action(obs)
+                action = self.make_action(obs, test=False)
 
                 obs_new, reward, done, info = self.env.step(action)
                 total_reward += reward
@@ -257,11 +257,11 @@ class Agent_DQN(Agent):
 
         next_state_values = torch.zeros(self.batch_size, device=self.device)
 
-        # next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1)[0].detach()
+        next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1)[0].detach()
 
-        next_state_action = self.policy_net(non_final_next_states).detach().max(1)[1].view(-1, 1)
-        next_state_values[non_final_mask] = self.target_net(non_final_next_states).detach().gather(
-            1, next_state_action).view(-1)
+        # next_state_action = self.policy_net(non_final_next_states).detach().max(1)[1].view(-1, 1)
+        # next_state_values[non_final_mask] = self.target_net(non_final_next_states).detach().gather(
+        #     1, next_state_action).view(-1)
 
         expected_state_action_values = (next_state_values * self.gamma) + reward_batch
 
