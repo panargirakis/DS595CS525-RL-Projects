@@ -106,6 +106,5 @@ class DuelingDQN(nn.Module):
         x_advantage = x[:, 512:, :, :].view(-1, 512)
         x_value = self.fc_value(x_value)
         x_advantage = self.fc_advantage(x_advantage)
-        # add comment
         q_value = x_value + x_advantage.sub(torch.mean(x_advantage, 1)[:, None])
         return q_value
