@@ -72,11 +72,21 @@ class Agent_DQN(Agent):
         self.eps_start = 1
 
         self.save_path = "./saved_models/model-latest.pt"
-        self.log_save_path = "./saved_models/model-latest-log.csv"
-        self.log_interval = args.log_interval
-        self.log_buffer = pd.DataFrame(columns=["Time Step", "Episode", "30-Episode Average Reward"])
+        if args.m_save_path is not None:
+            self.save_path = args.m_save_path
+
         if not os.path.isdir(os.path.dirname(self.save_path)):
             os.mkdir(os.path.dirname(self.save_path))
+
+        self.log_save_path = "./saved_models/model-latest-log.csv"
+        if args.l_save_path is not None:
+            self.log_save_path = args.m_save_path
+
+        if not os.path.isdir(os.path.dirname(self.log_save_path)):
+            os.mkdir(os.path.dirname(self.log_save_path))
+
+        self.log_interval = args.log_interval
+        self.log_buffer = pd.DataFrame(columns=["Time Step", "Episode", "30-Episode Average Reward"])
 
         self.log_buffer.to_csv(self.log_save_path, index=False)
 
@@ -86,8 +96,8 @@ class Agent_DQN(Agent):
             ###########################
             # YOUR IMPLEMENTATION HERE #
             load_path = self.save_path
-            if args.file_to_load is not None:
-                load_path = args.file_to_load
+            if args.m_load_path is not None:
+                load_path = args.m_load_path
             model = load(load_path, env.action_space.n)
             self.target_net.load_state_dict(model.state_dict())
             self.policy_net.load_state_dict(model.state_dict())
