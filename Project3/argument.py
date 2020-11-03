@@ -15,8 +15,8 @@ def add_arguments(parser):
     parser.add_argument('--memory_size', type=int, default=1500, help='size of replay memory')
     parser.add_argument('--continue_training', action='store_true', default=False,
                         help='Whether to continue training from an existing model')
-    parser.add_argument('--target_update_int', type=int, default=10000, help='the target update interval')
-    parser.add_argument('--save_interval', type=int, default=10000, help='the save interval')
+    parser.add_argument('--target_update_int', type=int, default=10000, help='the target update interval in steps')
+    parser.add_argument('--save_interval', type=int, default=10000, help='the save interval in steps')
     parser.add_argument('--m_load_path', type=str, default=None, help='the model load path for testing')
     parser.add_argument('--m_save_path', type=str, default=None, help='the model save path for training')
     parser.add_argument('--l_save_path', type=str, default=None, help='the log save path')
