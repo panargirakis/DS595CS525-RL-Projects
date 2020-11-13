@@ -80,7 +80,6 @@ class Agent_DQN(Agent):
         if not os.path.isdir(os.path.dirname(self.log_save_path)):
             os.mkdir(os.path.dirname(self.log_save_path))
 
-        self.log_interval = args.log_interval
         self.log_buffer = pd.DataFrame(columns=["Time Step", "Episode", "30-Episode Average Reward"])
 
         self.log_buffer.to_csv(self.log_save_path, index=False)
