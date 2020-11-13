@@ -5,7 +5,6 @@ import numpy as np
 from collections import deque
 import os
 from statistics import mean
-import sys
 import math
 import gym
 from collections import namedtuple
@@ -16,7 +15,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 from agent import Agent
-from dqn_model2 import DQN, DQNbn, load, save, DuelingDQN
+from dqn_model import DQN, load, save, DuelingDQN
 from replay_memory import ReplayMemory
 
 """
@@ -71,7 +70,7 @@ class Agent_DQN(Agent):
         self.eps_end = 0.02
         self.eps_start = 1
 
-        self.save_path = "./saved_models/model-latest.pt"
+        self.save_path = "./saved_models/model-latest.pth"
         if args.m_save_path is not None:
             self.save_path = args.m_save_path
 
@@ -236,17 +235,11 @@ class Agent_DQN(Agent):
         ###########################
 
     def optimize_model(self):
-        if len(self.replay_memory.memory) < self.batch_size:
+        if len(self.replay_memory) < self.batch_size:
             raise Exception("The batch size cannot be larger than the memory size")
+
         transitions = self.replay_buffer()
-        """
-        zip(*transitions) unzips the transitions into
-        Transition(*) creates new named tuple
-        batch.state - tuple of all the states (each state is a tensor)
-        batch.next_state - tuple of all the next states (each state is a tensor)
-        batch.reward - tuple of all the rewards (each reward is a float)
-        batch.action - tuple of all the actions (each action is an int)    
-        """
+
         batch = Transition(*zip(*transitions))
 
         actions = tuple((map(lambda a: torch.tensor([[a]], device=self.device), batch.action)))
