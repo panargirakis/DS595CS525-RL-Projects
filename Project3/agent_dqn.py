@@ -70,16 +70,12 @@ class Agent_DQN(Agent):
         self.eps_end = 0.02
         self.eps_start = 1
 
-        self.save_path = "./saved_models/model-latest.pth"
-        if args.m_save_path is not None:
-            self.save_path = args.m_save_path
+        self.save_path = args.m_save_path
 
         if not os.path.isdir(os.path.dirname(self.save_path)):
             os.mkdir(os.path.dirname(self.save_path))
 
-        self.log_save_path = "./saved_models/model-latest-log.csv"
-        if args.l_save_path is not None:
-            self.log_save_path = args.m_save_path
+        self.log_save_path = args.m_save_path
 
         if not os.path.isdir(os.path.dirname(self.log_save_path)):
             os.mkdir(os.path.dirname(self.log_save_path))
@@ -94,9 +90,7 @@ class Agent_DQN(Agent):
             print('loading trained model')
             ###########################
             # YOUR IMPLEMENTATION HERE #
-            load_path = self.save_path
-            if args.m_load_path is not None:
-                load_path = args.m_load_path
+            load_path = args.m_load_path
             model = load(load_path, env.action_space.n)
             self.target_net.load_state_dict(model.state_dict())
             self.policy_net.load_state_dict(model.state_dict())
