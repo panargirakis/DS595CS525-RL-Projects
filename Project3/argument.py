@@ -16,7 +16,7 @@ def add_arguments(parser):
                         help='Whether to continue training from an existing model')
     parser.add_argument('--target_update_int', type=int, default=10000, help='the target update interval in steps')
     parser.add_argument('--save_interval', type=int, default=10000, help='the save interval in steps')
-    parser.add_argument('--m_load_path', type=str, default="./saved_models/model.pth", help='the model load path for testing')
+    parser.add_argument('--m_load_path', type=str, default="./model.pth", help='the model load path for testing')
     parser.add_argument('--m_save_path', type=str, default="./saved_models/model-latest.pth",
                         help='the model save path for training')
     parser.add_argument('--l_save_path', type=str, default="./saved_models/model-latest-log.csv",
