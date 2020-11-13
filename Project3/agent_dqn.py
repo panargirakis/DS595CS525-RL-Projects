@@ -84,7 +84,7 @@ class Agent_DQN(Agent):
 
         self.log_buffer.to_csv(self.log_save_path, index=False)
 
-        if args.test_dqn or args.continue_training:
+        if args.test_dqn:
             # you can load your model here
             print('loading trained model')
             ###########################
