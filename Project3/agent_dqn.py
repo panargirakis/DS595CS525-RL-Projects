@@ -71,7 +71,7 @@ class Agent_DQN(Agent):
         self.eps_start = 1
 
         self.save_path = args.m_save_path
-        self.log_save_path = args.m_save_path
+        self.log_save_path = args.l_save_path
 
         if args.test_dqn:
             # you can load your model here
@@ -85,13 +85,13 @@ class Agent_DQN(Agent):
             del model
         else:
             # create directories for storing training data
-            self.log_buffer = pd.DataFrame(columns=["Time Step", "Episode", "30-Episode Average Reward"])
-            self.log_buffer.to_csv(self.log_save_path, index=False)
-
             if not os.path.isdir(os.path.dirname(self.save_path)):
                 os.mkdir(os.path.dirname(self.save_path))
             if not os.path.isdir(os.path.dirname(self.log_save_path)):
                 os.mkdir(os.path.dirname(self.log_save_path))
+
+            self.log_buffer = pd.DataFrame(columns=["Time Step", "Episode", "30-Episode Average Reward"])
+            self.log_buffer.to_csv(self.log_save_path, index=False)
 
     def init_game_setting(self):
         """
