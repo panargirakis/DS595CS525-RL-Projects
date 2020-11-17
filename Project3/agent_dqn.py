@@ -52,7 +52,7 @@ class Agent_DQN(Agent):
         self.learning_rate = args.learning_rate
         self.memory_size = self.init_memory * 10
         self.replay_memory = ReplayMemory(self.memory_size)
-        self.optimize_model_interval = 4
+        self.optimize_model_interval = 1
         self.gamma = 0.99
         self.save_interval = args.save_interval
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -72,6 +72,7 @@ class Agent_DQN(Agent):
 
         self.save_path = args.m_save_path
         self.log_save_path = args.l_save_path
+        self.log_interval = 2
 
         if args.test_dqn:
             # you can load your model here
@@ -208,19 +209,24 @@ class Agent_DQN(Agent):
             self.rolling_reward.append(total_reward)
             mean_reward = mean(self.rolling_reward)
 
+            # if the rolling average window is fully populated (is only false at the beginning of training
             if len(self.rolling_reward) == self.rolling_reward.maxlen:
-                self.log_buffer = self.log_buffer.append({'Time Step': self.steps_done,
-                                                          'Episode': episode,
-                                                          '30-Episode Average Reward': mean_reward},
-                                                         ignore_index=True)
+
+                # if the log interval has been reached
+                if episode % self.log_interval == 0:
+                    self.log_buffer = self.log_buffer.append({'Time Step': self.steps_done,
+                                                              'Episode': episode,
+                                                              '30-Episode Average Reward': mean_reward},
+                                                             ignore_index=True)
+
+                # if the log save interval has been reached
+                if episode % 20 == 0:
+                    self.log_buffer.to_csv(self.log_save_path, mode='a', header=False, index=False)
+                    self.log_buffer = self.log_buffer.iloc[0:0]  # clear so that the save data does not get re-appended
 
             if episode % 20 == 0:
                 print('Total steps: {} \t Episode: {}/{} \t Total reward: {} \t 30-ep avg reward: {:.3f}'.format(
                     self.steps_done, episode, episode_steps, total_reward, mean_reward))
-
-            if episode % 50 == 0 and len(self.rolling_reward) == self.rolling_reward.maxlen:
-                self.log_buffer.to_csv(self.log_save_path, mode='a', header=False, index=False)
-                self.log_buffer = self.log_buffer.iloc[0:0]  # clear so that the save data does not get re-appended
 
         save(self.policy_net, self.save_path)
         ###########################
