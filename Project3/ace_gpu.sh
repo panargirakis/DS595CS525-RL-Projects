@@ -21,4 +21,4 @@ source /home/pargyrakis/DS595CS525-RL-Projects/venv/bin/activate
 cd /home/pargyrakis/DS595CS525-RL-Projects/Project3
 pip install -r requirement.txt
 pip install torch==1.7.0+cu92 torchvision==0.8.1+cu92 torchaudio==0.7.0 -f https://download.pytorch.org/whl/torch_stable.html
-python main.py --train_dqn > train_log.txt
+python main.py --train_dqn
