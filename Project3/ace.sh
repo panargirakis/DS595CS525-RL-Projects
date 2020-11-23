@@ -1,8 +1,9 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH -n 8
+#SBATCH -n 12
 #SBATCH --mem 16000
-#SBATCH --gres=gpu:0
+#SBATCH --gres=gpu:1
+#SBATCH -C K20
 #SBATCH -o log.txt
 
 # Load any needed environment modules
