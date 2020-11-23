@@ -14,4 +14,4 @@ source /home/pargyrakis/DS595CS525-RL-Projects/venv/bin/activate
 # Execute my commands
 cd /home/pargyrakis/DS595CS525-RL-Projects/Project3
 pip install -r requirement.txt
-python main.py --train_dqn
+python main.py --train_dqn > train_log.txt
