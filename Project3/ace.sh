@@ -5,11 +5,11 @@
 #SBATCH --gres=gpu:0
 #SBATCH -o log.txt
 
-# Set python virtual env
-. /home/pargyrakis/DS595CS525-RL-Projects/venv/bin/activate
-
 # Load any needed environment modules
 module load python/gcc-8.2.0/3.7.2
+
+# Set python virtual env
+source /home/pargyrakis/DS595CS525-RL-Projects/venv/bin/activate
 
 # Execute my commands
 cd /home/pargyrakis/DS595CS525-RL-Projects/Project3
