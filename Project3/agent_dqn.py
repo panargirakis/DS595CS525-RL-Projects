@@ -138,7 +138,7 @@ class Agent_DQN(Agent):
 
         if sample > eps_threshold or test:
             with torch.no_grad():
-                action = self.policy_net(state.to(self.device)).max(1)[1].view(1, 1).flatten().numpy()
+                action = self.policy_net(state.to("cpu")).max(1)[1].view(1, 1).flatten().numpy()
                 try:
                     if len(action) == 1:
                         action = action[0]
@@ -195,14 +195,14 @@ class Agent_DQN(Agent):
 
                 obs_new, reward, done, info = self.env.step(action)
                 total_reward += reward
-                reward = torch.tensor([reward], device=self.device)
-                action_t = torch.tensor([[action]], device=self.device, dtype=torch.long)
+                reward = torch.tensor([reward], device="cpu")
+                action_t = torch.tensor([[action]], device="cpu", dtype=torch.long)
 
                 next_state = None
                 if not done:
                     next_state = self.get_state(obs_new)
-                self.push(self.get_state(obs), action_t.to(self.device),
-                          next_state, reward.to(self.device))
+                self.push(self.get_state(obs), action_t.to("cpu"),
+                          next_state, reward.to("cpu"))
                 obs = obs_new
 
                 if self.steps_done > self.init_memory:
