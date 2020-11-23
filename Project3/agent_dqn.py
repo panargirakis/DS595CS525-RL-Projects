@@ -184,8 +184,6 @@ class Agent_DQN(Agent):
         Implement your training algorithm here
         """
         ###########################
-        start_time
-
         for episode in range(self.n_episodes):
             obs = self.env.reset()
             total_reward = 0.0
