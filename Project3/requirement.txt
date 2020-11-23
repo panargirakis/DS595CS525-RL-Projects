@@ -1,6 +1,7 @@
 opencv-python-headless
 torch
 gym==0.10.4
-gym[atari]
+atari-py
 pandas
 numpy
+wandb

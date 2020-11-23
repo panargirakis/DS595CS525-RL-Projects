@@ -17,6 +17,7 @@ import torch.optim as optim
 from agent import Agent
 from dqn_model import DQN, load, save, DuelingDQN
 from replay_memory import ReplayMemory
+import wandb
 
 """
 you can import any package and define any extra function as you need
@@ -28,6 +29,8 @@ random.seed(595)
 
 Transition = namedtuple('Transion',
                         ('state', 'action', 'next_state', 'reward'))
+
+os.environ["WANDB_API_KEY"] = "e6c9fa1e9943cc964164d0520310d4352360c69b"
 
 
 class Agent_DQN(Agent):
@@ -85,6 +88,13 @@ class Agent_DQN(Agent):
             self.policy_net.load_state_dict(model.state_dict())
             del model
         else:
+            wandb.init(project="Breakout DQN")
+            config = wandb.config
+            config.batch_size = self.batch_size
+            config.learning_rate = self.learning_rate
+            config.memory_size = self.memory_size
+            config.optimize_model_interval = self.optimize_model_interval
+
             # create directories for storing training data
             if not os.path.isdir(os.path.dirname(self.save_path)):
                 os.mkdir(os.path.dirname(self.save_path))
@@ -218,6 +228,8 @@ class Agent_DQN(Agent):
                                                               'Episode': episode,
                                                               '30-Episode Average Reward': mean_reward},
                                                              ignore_index=True)
+                    wandb.log({'Time Step': self.steps_done, 'Episode': episode,
+                               '30-Episode Average Reward': mean_reward})
 
                 # if the log save interval has been reached
                 if episode % 20 == 0:
