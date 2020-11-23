@@ -94,6 +94,7 @@ class Agent_DQN(Agent):
             config.learning_rate = self.learning_rate
             config.memory_size = self.memory_size
             config.optimize_model_interval = self.optimize_model_interval
+            config.device = self.device
 
             # create directories for storing training data
             if not os.path.isdir(os.path.dirname(self.save_path)):
@@ -183,6 +184,8 @@ class Agent_DQN(Agent):
         Implement your training algorithm here
         """
         ###########################
+        start_time
+
         for episode in range(self.n_episodes):
             obs = self.env.reset()
             total_reward = 0.0
